@@ -4,10 +4,6 @@ import '../App3.css';
 
 // Import icons
 import { 
-  Users, 
-  Car, 
-  Calendar, 
-  Shield, 
   Menu,
   X,
   Phone,
@@ -15,9 +11,7 @@ import {
   MapPin,
   Facebook,
   Instagram,
-  Twitter,
-  BookOpen,
-  Truck
+  Twitter
 } from 'lucide-react';
 
 const Services = () => {
@@ -36,13 +30,13 @@ const Services = () => {
   }, []);
 
   // Smooth scroll function
-  const scrollToSection = (sectionId) => {
+  /*const scrollToSection = (sectionId) => {
     const element = document.getElementById(sectionId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
       setMobileMenuOpen(false);
     }
-  };
+  };*/  
 
   const handleViewDetails = (serviceType) => {
     navigate(`/services/${serviceType}`);

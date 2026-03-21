@@ -6,6 +6,9 @@ function MySchedule({ staffInfo }) {
   const [viewMode, setViewMode] = useState('list');
 
   useEffect(() => { loadMySchedule(); }, []);
+/*useEffect(() => {
+  loadMySchedule();
+}, [instructorId, loadMySchedule]);*/
 
   const loadMySchedule = async () => {
     setLoading(true);
