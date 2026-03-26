@@ -20,7 +20,7 @@ function PaymentRecord() {
 
   const fetchRecentPayments = async () => {
     try {
-      const res  = await fetch('http://localhost:5000/api/payments/recent');
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/payments/recent`);
       const data = await res.json();
       if (res.ok) setRecentPayments(data);
     } catch (e) { console.error(e); }
@@ -28,10 +28,10 @@ function PaymentRecord() {
 
   const fetchCustomerFinancials = async (customerId) => {
     try {
-      const res      = await fetch(`http://localhost:5000/api/customers/${customerId}`);
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers/${customerId}`);
       const customer = await res.json();
       if (!res.ok) return;
-      const paymentsRes = await fetch(`http://localhost:5000/api/payments/customer/${customerId}`);
+      const paymentsRes = await fetch(`${process.env.REACT_APP_API_URL}/api/payments/customer/${customerId}`);
       const payments    = paymentsRes.ok ? await paymentsRes.json() : [];
       const totalPaid             = payments.reduce((s, p) => s + parseFloat(p.amountPaid || 0), 0);
       const totalTowardLessons    = payments.reduce((s, p) => s + parseFloat(p.amountTowardLessons || 0), 0);
@@ -53,7 +53,7 @@ function PaymentRecord() {
   const handleSearch = async () => {
     if (!searchTerm.trim()) { alert('Please enter a customer name'); return; }
     try {
-      const res  = await fetch(`http://localhost:5000/api/customers/search?name=${searchTerm}`);
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers/search?name=${searchTerm}`);
       const data = await res.json();
       if (res.ok) { setCustomers(data); if (data.length === 0) alert('No customers found'); }
       else alert('Error searching customers');
