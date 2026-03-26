@@ -10,7 +10,7 @@ function AllBookings({ staffInfo }) {
   const loadBookings = async () => {
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5000/api/bookings/all');
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/all`);
       const data = await res.json();
       if (res.ok) setBookings(data);
     } catch (e) { console.error(e); }
@@ -21,7 +21,7 @@ function AllBookings({ staffInfo }) {
     const instructorId = prompt(`Enter instructor ID to assign (current: ${currentInstructorId || 'None'}):`);
     if (!instructorId) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/update-status/${bookingId}`, {
+     const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/update-status/${bookingId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: 'confirmed', instructorId: parseInt(instructorId) }),
       });
@@ -33,7 +33,7 @@ function AllBookings({ staffInfo }) {
   const handleUpdateStatus = async (bookingId, newStatus) => {
     if (!window.confirm(`Change status to "${newStatus}"?`)) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/bookings/update-status/${bookingId}`, {
+       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/update-status/${bookingId}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus }),
       });

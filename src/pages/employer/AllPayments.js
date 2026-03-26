@@ -10,7 +10,7 @@ function AllPayments({ staffInfo }) {
   const loadPayments = async () => {
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5000/api/payments/all');
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/payments/all`);
       const data = await res.json();
       if (res.ok) setPayments(data);
     } catch (e) { console.error(e); }

@@ -21,7 +21,7 @@ function ManageBookings() {
 
   const fetchBookings = async (customerId) => {
     try {
-      const res  = await fetch(`http://localhost:5000/api/bookings/customer/${customerId}`);
+       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/customer/${customerId}`);
       const data = await res.json();
       if (res.ok) setBookings(data);
     } catch (error) {

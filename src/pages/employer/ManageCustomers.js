@@ -13,7 +13,7 @@ function ManageCustomers({ staffInfo }) {
   const loadCustomers = async () => {
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5000/api/customers/all');
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers/all`);
       const data = await res.json();
       if (res.ok) setCustomers(data);
     } catch (e) { console.error(e); }
@@ -23,16 +23,17 @@ function ManageCustomers({ staffInfo }) {
   const handleArchive = async (id) => {
     if (!window.confirm('Archive this customer?')) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/customers/archive/${id}`, { method: 'PUT' });
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers/archive/${id}`, { method: 'PUT' });
       if (res.ok) { alert('Customer archived!'); loadCustomers(); }
       else { const d = await res.json(); alert(d.message || 'Failed'); }
     } catch { alert('Connection error.'); }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('⚠️ WARNING: This will permanently delete this customer and all their data including bookings and payments. This cannot be undone. Are you sure?')) return;
     if (window.prompt('Type "DELETE" to confirm:') !== 'DELETE') { alert('Cancelled'); return; }
     try {
-      const res = await fetch(`http://localhost:5000/api/customers/delete/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers/delete/${id}`, { method: 'DELETE' });
       if (res.ok) { alert('Customer deleted!'); loadCustomers(); }
       else { const d = await res.json(); alert(d.message || 'Failed'); }
     } catch { alert('Connection error.'); }
@@ -43,8 +44,8 @@ function ManageCustomers({ staffInfo }) {
     setShowModal(true);
     try {
       const [bRes, pRes] = await Promise.all([
-        fetch(`http://localhost:5000/api/bookings/customer/${customer.customerId}`),
-        fetch(`http://localhost:5000/api/payments/customer/${customer.customerId}`),
+         fetch(`${process.env.REACT_APP_API_URL}/api/bookings/customer/${customer.customerId}`),
+         fetch(`${process.env.REACT_APP_API_URL}/api/payments/customer/${customer.customerId}`),
       ]);
       const bookings = await bRes.json();
       const payments = await pRes.json();

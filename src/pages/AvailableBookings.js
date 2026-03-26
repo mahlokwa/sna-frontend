@@ -26,7 +26,7 @@ function AvailableBookings({ staffInfo }) {
   const handleAcceptBooking = async (bookingId) => {
     if (!window.confirm('Accept this booking?')) return;
     try {
-      const res  = await fetch(`http://localhost:5000/api/bookings/accept/${bookingId}`, {
+       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/accept/${bookingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ instructorId: staffInfo.staffId }),

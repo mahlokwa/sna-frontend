@@ -13,7 +13,7 @@ function MySchedule({ staffInfo }) {
   const loadMySchedule = async () => {
     setLoading(true);
     try {
-      const res  = await fetch(`http://localhost:5000/api/bookings/instructor/${staffInfo.staffId}`);
+     const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/instructor/${staffInfo.staffId}`);
       const data = await res.json();
       if (res.ok) setBookings(data);
     } catch (e) { console.error(e); }
@@ -23,7 +23,7 @@ function MySchedule({ staffInfo }) {
   const handleCancelBooking = async (bookingId) => {
     if (!window.confirm('Cancel this booking? It will be returned to the available pool.')) return;
     try {
-      const res  = await fetch(`http://localhost:5000/api/bookings/instructor-cancel/${bookingId}`, {
+     const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/instructor-cancel/${bookingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ instructorId: staffInfo.staffId }),

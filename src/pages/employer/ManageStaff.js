@@ -13,7 +13,7 @@ function ManageStaff({ staffInfo }) {
   const loadStaff = async () => {
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5000/api/staff/all');
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/staff/all`);
       const data = await res.json();
       if (res.ok) setStaff(data);
     } catch (e) { console.error(e); }
@@ -23,7 +23,7 @@ function ManageStaff({ staffInfo }) {
   const handleAddStaff = async (e) => {
     e.preventDefault();
     try {
-      const res  = await fetch('http://localhost:5000/api/staff/register', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/staff/register`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newStaff),
       });
@@ -38,9 +38,10 @@ function ManageStaff({ staffInfo }) {
   };
 
   const handleDelete = async (id, name) => {
+    if (!window.confirm('⚠️ WARNING: This will permanently delete this staff member and all their data including bookings. This cannot be undone. Are you sure?')) return;
     if (window.prompt(`Type "${name}" to confirm deletion:`) !== name) { alert('Cancelled'); return; }
     try {
-      const res = await fetch(`http://localhost:5000/api/staff/delete/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/staff/delete/${id}`, { method: 'DELETE' });
       if (res.ok) { alert('Staff member deleted!'); loadStaff(); }
       else { const d = await res.json(); alert(d.message || 'Failed'); }
     } catch { alert('Connection error.'); }
@@ -50,7 +51,7 @@ function ManageStaff({ staffInfo }) {
     const newRole = currentRole === 'instructor' ? 'employer' : 'instructor';
     if (!window.confirm(`Change role to ${newRole}?`)) return;
     try {
-      const res = await fetch(`http://localhost:5000/api/staff/update-role/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/staff/update-role/${id}`, {
         method: 'PUT', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ role: newRole }),
       });
