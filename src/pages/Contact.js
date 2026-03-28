@@ -7,8 +7,6 @@ import {
   Mail,
   MapPin,
   Facebook,
-  Instagram,
-  Twitter,
   Clock,
   Send
 } from 'lucide-react';
@@ -76,7 +74,7 @@ const Contact = () => {
             <li><a href="/services">Services</a></li>
             <li><a href="/pricing">Pricing</a></li>
             <li><a href="/contact" className="active">Contact</a></li>
-            <li><a href="/custlogin" className="cta-nav-btn">Start Now</a></li>
+            <li><a href="/custlogin" className="cta-nav-btn">Book a slot</a></li>
           </ul>
 
           <div 
@@ -154,16 +152,15 @@ const Contact = () => {
 
               <div className="social-section">
                 <h3>Follow Us</h3>
-                <div className="social-links-large">
-                  <a href="#" className="social-link">
-                    <Facebook size={24} />
-                  </a>
-                  <a href="#" className="social-link">
-                    <Instagram size={24} />
-                  </a>
-                  <a href="#" className="social-link">
-                    <Twitter size={24} />
-                  </a>
+                 <div className="social-links-large">
+                   <a href="https://www.facebook.com/people/SNA-Driving-School/61555841217666/" className="social-link">
+                     <Facebook size={24} />
+                   </a>
+                   <a href="https://www.tiktok.com/@sna.driving.schoo4?_r=1&_t=ZS-951DbFLCPFn" className="social-link">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+                      </svg>
+                   </a>
                 </div>
               </div>
             </div>
@@ -255,13 +252,18 @@ const Contact = () => {
       </section>
 
       {/* ==================== MAP SECTION (PLACEHOLDER) ==================== */}
-      <section className="map-section">
-        <div className="map-placeholder">
-          <MapPin size={48} />
-          <p>Polokwane, Limpopo, South Africa</p>
-        </div>
-      </section>
-
+         <section className="map-section">
+           <iframe
+               title="SNA Driving School Location"
+               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3718.123456789!2d29.7333!3d-23.8833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2sMankweng%2C%20Limpopo!5e0!3m2!1sen!2sza!4v1234567890"
+               width="100%"
+               height="400"
+               style={{ border: 0 }}
+               allowFullScreen=""
+               loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+         </section>
       {/* ==================== FOOTER ==================== */}
       <footer className="footer">
         <div className="footer-content">
@@ -270,11 +272,14 @@ const Contact = () => {
             <p style={{ color: '#666', lineHeight: '1.8' }}>
               Professional driver training with a focus on safety, confidence, and excellence.
             </p>
-            <div className="social-links">
-              <a href="#"><Facebook size={18} /></a>
-              <a href="#"><Instagram size={18} /></a>
-              <a href="#"><Twitter size={18} /></a>
-            </div>
+              <div className="social-links">
+                <a href="https://www.facebook.com/people/SNA-Driving-School/61555841217666/"><Facebook size={18} /></a>
+                <a href="https://www.tiktok.com/@sna.driving.schoo4?_r=1&_t=ZS-951DbFLCPFn">
+                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                   <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+                 </svg>
+                </a>
+              </div>
           </div>
 
           <div className="footer-section">
@@ -299,22 +304,22 @@ const Contact = () => {
           </div>
 
           <div className="footer-section">
-            <h3>Contact Us</h3>
-            <div className="contact-info">
-              <div className="contact-item">
-                <Phone size={18} />
-                <span>+27 (0) 123 456 7890</span>
-              </div>
-              <div className="contact-item">
-                <Mail size={18} />
-                <span>info@snadrivingschool.co.za</span>
-              </div>
-              <div className="contact-item">
-                <MapPin size={18} />
-                <span>Polokwane, Limpopo, South Africa</span>
-              </div>
-            </div>
-          </div>
+                      <h3>Contact Us</h3>
+                      <div className="contact-info">
+                        <div className="contact-item">
+                          <Phone size={18} />
+                          <span>+27 (0) 079 248 1203</span>
+                        </div>
+                        <div className="contact-item">
+                          <Mail size={18} />
+                          <span>Snadrivingschool888@gmail.com</span>
+                        </div>
+                        <div className="contact-item">
+                          <MapPin size={18} />
+                          <span>Mankweng,Shop no 08, back opposite shoprite, M house street</span>
+                        </div>
+                      </div>
+                    </div>
         </div>
 
         <div className="footer-bottom">

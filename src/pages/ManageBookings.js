@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../App4.css';
+import useSessionTimeout from './useSessionTimeout';
 
 function ManageBookings() {
+  useSessionTimeout('/custlogin');
   const navigate = useNavigate();
   const [customerData, setCustomerData] = useState(null);
   const [bookings, setBookings] = useState([]);

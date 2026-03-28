@@ -4,8 +4,10 @@ import AvailableBookings from './AvailableBookings';
 import MySchedule from './MySchedule';
 import RegisterStudentTab from './RegisterStudentTab';
 import '../App5.css';
+import useSessionTimeout from './useSessionTimeout';
 
 function InstructorDashboard() {
+  useSessionTimeout('/login');
   const [currentTab, setCurrentTab] = useState(0);
   const [staffInfo, setStaffInfo]   = useState(null);
 

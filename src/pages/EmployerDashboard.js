@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import useSessionTimeout from './useSessionTimeout';
 import AllPayments from './employer/AllPayments';
 import AllBookings from './employer/AllBookings';
 import SalesReports from './employer/SalesReports';
@@ -11,7 +12,9 @@ import RegisterStudentTab from './RegisterStudentTab';
 import RegisterEmployeeTab from './RegisterEmployeeTab';
 import '../App.css';
 
+
 function EmployerDashboard() {
+  useSessionTimeout('/login');
   const [currentTab, setCurrentTab] = useState(0);
   const [staffInfo, setStaffInfo] = useState(null);
 

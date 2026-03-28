@@ -7,8 +7,6 @@ import {
   Mail,
   MapPin,
   Facebook,
-  Instagram,
-  Twitter,
   Users,
   Car,
   Shield,
@@ -30,32 +28,11 @@ const About = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const instructors = [
-    {
-      name: "Instructor Name",
-      role: "Senior Driving Instructor",
-      experience: "10+ years",
-      specialty: "Code 8 & 10"
-    },
-    {
-      name: "Instructor Name",
-      role: "Driving Instructor",
-      experience: "7+ years",
-      specialty: "Code 14 & Heavy Vehicles"
-    },
-    {
-      name: "Instructor Name",
-      role: "Driving Instructor",
-      experience: "5+ years",
-      specialty: "Learner's & Code 8"
-    }
-  ];
-
   const stats = [
-    { icon: <Users />, number: "500+", label: "Students Trained" },
+    { icon: <Users />, number: "200+", label: "Students Trained" },
     { icon: <Car />, number: "95%", label: "Pass Rate" },
-    { icon: <Calendar />, number: "15+", label: "Years Experience" },
-    { icon: <Award />, number: "100%", label: "Certified Instructors" }
+    { icon: <Calendar />, number: "3+", label: "Years Experience" },
+    { icon: <Award />, number: "100%", label: "Experienced Instructors" }
   ];
 
   const values = [
@@ -67,7 +44,7 @@ const About = () => {
     {
       icon: <Users />,
       title: "Professional Instructors",
-      description: "Our instructors are certified, experienced, and patient. We focus on building your confidence behind the wheel."
+      description: "Our instructors are experienced, and patient. We focus on building your confidence behind the wheel."
     },
     {
       icon: <CheckCircle />,
@@ -91,7 +68,7 @@ const About = () => {
             <li><a href="/services">Services</a></li>
             <li><a href="/pricing">Pricing</a></li>
             <li><a href="/contact">Contact</a></li>
-            <li><a href="/custlogin" className="cta-nav-btn">Start Now</a></li>
+            <li><a href="/custlogin" className="cta-nav-btn">Book a slot</a></li>
           </ul>
 
           <div 
@@ -107,7 +84,7 @@ const About = () => {
       <section className="about-hero">
         <div className="hero-content">
           <h1>About <span>SNA Driving School</span></h1>
-          <p>Empowering safe, confident drivers in Polokwane and beyond</p>
+          <p>Empowering safe, confident drivers in Mankweng </p>
         </div>
       </section>
 
@@ -117,7 +94,7 @@ const About = () => {
           <div className="story-content">
             <h2>Our Story</h2>
             <p>
-              SNA Driving School has been a trusted name in driver education for over 15 years. 
+              SNA Driving School has been a trusted name in driver education for over 3 years. 
               We started with a simple mission: to provide professional, patient, and comprehensive 
               driver training that builds confidence and promotes road safety.
             </p>
@@ -169,37 +146,6 @@ const About = () => {
         </div>
       </section>
 
-      {/* ==================== TEAM SECTION ==================== */}
-      <section className="team-section">
-        <div className="container">
-          <div className="section-header">
-            <h2>Meet Our Team</h2>
-            <p>Professional, certified, and passionate instructors</p>
-          </div>
-
-          <div className="team-grid">
-            {instructors.map((instructor, index) => (
-              <div key={index} className="instructor-card">
-                <div className="instructor-avatar">
-                  <Users size={48} />
-                </div>
-                <h3>{instructor.name}</h3>
-                <p className="instructor-role">{instructor.role}</p>
-                <div className="instructor-details">
-                  <div className="detail-item">
-                    <Calendar size={16} />
-                    <span>{instructor.experience}</span>
-                  </div>
-                  <div className="detail-item">
-                    <Award size={16} />
-                    <span>{instructor.specialty}</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* ==================== CTA SECTION ==================== */}
       <section className="cta-section">
@@ -221,11 +167,14 @@ const About = () => {
             <p style={{ color: '#666', lineHeight: '1.8' }}>
               Professional driver training with a focus on safety, confidence, and excellence.
             </p>
-            <div className="social-links">
-              <a href="#"><Facebook size={18} /></a>
-              <a href="#"><Instagram size={18} /></a>
-              <a href="#"><Twitter size={18} /></a>
-            </div>
+                         <div className="social-links">
+                           <a href="https://www.facebook.com/people/SNA-Driving-School/61555841217666/"><Facebook size={18} /></a>
+                           <a href="https://www.tiktok.com/@sna.driving.schoo4?_r=1&_t=ZS-951DbFLCPFn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+                            </svg>
+                           </a>
+                         </div>
           </div>
 
           <div className="footer-section">
@@ -250,22 +199,22 @@ const About = () => {
           </div>
 
           <div className="footer-section">
-            <h3>Contact Us</h3>
-            <div className="contact-info">
-              <div className="contact-item">
-                <Phone size={18} />
-                <span>+27 (0) 123 456 7890</span>
-              </div>
-              <div className="contact-item">
-                <Mail size={18} />
-                <span>info@snadrivingschool.co.za</span>
-              </div>
-              <div className="contact-item">
-                <MapPin size={18} />
-                <span>Polokwane, Limpopo, South Africa</span>
-              </div>
+                      <h3>Contact Us</h3>
+                      <div className="contact-info">
+                        <div className="contact-item">
+                          <Phone size={18} />
+                          <span>+27 (0) 079 248 1203</span>
+                        </div>
+                        <div className="contact-item">
+                          <Mail size={18} />
+                          <span>Snadrivingschool888@gmail.com</span>
+                        </div>
+                        <div className="contact-item">
+                          <MapPin size={18} />
+                          <span>Mankweng,Shop no 08, back opposite shoprite, M house street</span>
+                        </div>
+                      </div>
             </div>
-          </div>
         </div>
 
         <div className="footer-bottom">

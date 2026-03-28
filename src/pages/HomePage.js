@@ -19,8 +19,6 @@ import {
   Mail,
   MapPin,
   Facebook,
-  Instagram,
-  Twitter
 } from 'lucide-react';
 
 const Homepage = () => {
@@ -61,7 +59,7 @@ const Homepage = () => {
             <li><a href="/services">Services</a></li>
             <li><a href="/pricing">Pricing</a></li>
             <li><a href="/contact">Contact</a></li>
-            <li><a href="/custlogin" className="cta-nav-btn">Start Now</a></li>
+            <li><a href="/custlogin" className="cta-nav-btn">Book a slot</a></li>
           </ul>
 
           <div 
@@ -86,10 +84,10 @@ const Homepage = () => {
               Start your driving journey today with South Africa's most trusted driving school.
             </p>
             <div className="hero-buttons">
-              <a href="#" className="btn btn-primary">Book Your Lesson</a>
-              <a onClick={() => scrollToSection('courses')} className="btn btn-secondary">
-                View Courses
-              </a>
+               <a href="/contact" className="btn btn-primary">Become a student</a>
+               <button onClick={() => scrollToSection('courses')} className="btn btn-secondary">
+                 View Courses
+               </button>
             </div>
           </div>
         </div>
@@ -231,11 +229,14 @@ const Homepage = () => {
             <p style={{ color: '#666', lineHeight: '1.8' }}>
               Professional driver training with a focus on safety, confidence, and excellence.
             </p>
-            <div className="social-links">
-              <a href="#"><Facebook size={18} /></a>
-              <a href="#"><Instagram size={18} /></a>
-              <a href="#"><Twitter size={18} /></a>
-            </div>
+                          <div className="social-links">
+                            <a href="https://www.facebook.com/people/SNA-Driving-School/61555841217666/"><Facebook size={18} /></a>
+                            <a href="https://www.tiktok.com/@sna.driving.schoo4?_r=1&_t=ZS-951DbFLCPFn">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                               <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.69a8.18 8.18 0 004.78 1.52V6.75a4.85 4.85 0 01-1.01-.06z"/>
+                             </svg>
+                            </a>
+                          </div>
           </div>
 
           <div className="footer-section">
@@ -249,13 +250,13 @@ const Homepage = () => {
             </ul>
           </div>
 
-          <div className="footer-section">
-            <h3>Courses</h3>
+           <div className="footer-section">
+            <h3>Services</h3>
             <ul>
-              <li><a href="#">Code 8 License</a></li>
-              <li><a href="#">Code 10 License</a></li>
-              <li><a href="#">Code 14 License</a></li>
-              <li><a href="#">Learner's License</a></li>
+              <li><a href="/services/learners">Learner's License</a></li>
+              <li><a href="/services/code8">Code 8 License</a></li>
+              <li><a href="/services/code10">Code 10 License</a></li>
+              <li><a href="/services/code14">Code 14 License</a></li>
             </ul>
           </div>
 
@@ -264,15 +265,15 @@ const Homepage = () => {
             <div className="contact-info">
               <div className="contact-item">
                 <Phone size={18} />
-                <span>+27 (0) 123 456 7890</span>
+                <span>+27 (0) 079 248 1203</span>
               </div>
               <div className="contact-item">
                 <Mail size={18} />
-                <span>info@snadrivingschool.co.za</span>
+                <span>Snadrivingschool888@gmail.com</span>
               </div>
               <div className="contact-item">
                 <MapPin size={18} />
-                <span>Polokwane, Limpopo, South Africa</span>
+                <span>Mankweng,Shop no 08, back opposite shoprite, M house street</span>
               </div>
             </div>
           </div>
@@ -319,7 +320,6 @@ const CourseCard = ({ title, description, emoji, imageUrl }) => (
     <div className="course-content">
       <h3>{title}</h3>
       <p>{description}</p>
-      <a href="#" className="course-btn">View Details →</a>
     </div>
   </div>
 );
