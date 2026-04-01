@@ -12,7 +12,7 @@ function RegisterStudentTab() {
   };
 
   const calculatePackagePricing = (packageType) => {
-    const p = { packagePrice: 0, drivingLessonsPrice: 0, learnersFee: 0, totalLessons: 15, pricePerLesson: 200 };
+    const p = { packagePrice: 0, drivingLessonsPrice: 0, learnersFee: 0, totalLessons: 20, pricePerLesson: 150 };
     switch (packageType) {
       case 'code8': case 'code10': case 'code14':
         p.packagePrice = 3000; p.drivingLessonsPrice = 3000; break;
@@ -24,9 +24,31 @@ function RegisterStudentTab() {
   };
 
   const pricing = formData.licenseType ? calculatePackagePricing(formData.licenseType) : null;
+  const validate = () => {
+  const nameRegex = /^[a-zA-Z\s]+$/;
+  const phoneRegex = /^0[0-9]{9}$/;
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+  if (!nameRegex.test(formData.firstName)) {
+    alert('First name should contain letters only.'); return false;
+  }
+  if (!nameRegex.test(formData.lastName)) {
+    alert('Last name should contain letters only.'); return false;
+  }
+  if (!phoneRegex.test(formData.phone)) {
+    alert('Phone number must be 10 digits and start with 0.'); return false;
+  }
+  if (!emailRegex.test(formData.email)) {
+    alert('Please enter a valid email address.'); return false;
+  }
+  if (formData.emergencyPhone && !phoneRegex.test(formData.emergencyPhone)) {
+    alert('Emergency phone number must be 10 digits and start with 0.'); return false;
+  }
+  return true;
+};
   const handleSubmit = async (e) => {
     e.preventDefault();
+     if (!validate()) return; 
     const p = calculatePackagePricing(formData.licenseType);
     try {
        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers`, {
