@@ -16,7 +16,7 @@ function AvailableBookings({ staffInfo }) {
   const loadAvailableBookings = async () => {
     setLoading(true);
     try {
-      const res  = await fetch('http://localhost:5000/api/bookings/available');
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/available`);
       const data = await res.json();
       if (res.ok) setBookings(data);
     } catch (e) { console.error(e); }

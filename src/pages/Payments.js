@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, Plus, CreditCard, Banknote, Building } from 'lucide-react';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = `${process.env.REACT_APP_API_URL}/api`;
 
 const Payments = ({ instructor, showToast, setCount }) => {
   const [payments, setPayments] = useState([]);
