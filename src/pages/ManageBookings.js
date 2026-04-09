@@ -36,7 +36,7 @@ function ManageBookings() {
   const handleCancelBooking = async (bookingId) => {
     if (!window.confirm('Are you sure you want to cancel this booking?')) return;
     try {
-      const res  = await fetch(`http://localhost:5000/api/bookings/cancel/${bookingId}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/cancel/${bookingId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ customerId: customerData.customerId }),
