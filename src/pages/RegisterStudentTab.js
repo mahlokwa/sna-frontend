@@ -4,6 +4,7 @@ function RegisterStudentTab() {
   const [formData, setFormData] = useState({
     firstName: '', lastName: '', email: '', phone: '',
     licenseType: '', address: '', emergencyContact: '', emergencyPhone: '',
+    customerType: 'new', paymentStatus: 'owing',
   });
   const [generatedToken, setGeneratedToken] = useState('');
 
@@ -11,19 +12,31 @@ function RegisterStudentTab() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const calculatePackagePricing = (packageType) => {
-    const p = { packagePrice: 0, drivingLessonsPrice: 0, learnersFee: 0, totalLessons: 20, pricePerLesson: 150 };
-    switch (packageType) {
-      case 'code8': case 'code10': case 'code14':
-        p.packagePrice = 3000; p.drivingLessonsPrice = 3000; break;
-      case 'code8_learners': case 'code10_learners': case 'code14_learners':
-        p.packagePrice = 3500; p.drivingLessonsPrice = 3000; p.learnersFee = 500; break;
-      default: break;
-    }
-    return p;
-  };
+ const calculatePackagePricing = (packageType, customerType, paymentStatus) => {
+  const p = { packagePrice: 0, drivingLessonsPrice: 0, learnersFee: 0, totalLessons: 20, pricePerLesson: 150 };
+  
+  const isSpecial = customerType === 'special';
+  
+  switch (packageType) {
+    case 'code8': case 'code10': case 'code14':
+      p.packagePrice = isSpecial ? 2000 : 3000;
+      p.drivingLessonsPrice = p.packagePrice;
+      break;
+    case 'code8_learners': case 'code10_learners': case 'code14_learners':
+      p.packagePrice = isSpecial ? 2500 : 3500;
+      p.drivingLessonsPrice = isSpecial ? 2000 : 3000;
+      p.learnersFee = 500;
+      break;
+    default: break;
+  }
 
-  const pricing = formData.licenseType ? calculatePackagePricing(formData.licenseType) : null;
+  // If paid in full, set initial payment equal to package price
+  if (paymentStatus === 'paid') p.initialPayment = p.packagePrice;
+  
+  return p;
+};
+
+ const pricing = formData.licenseType ? calculatePackagePricing(formData.licenseType, formData.customerType, formData.paymentStatus) : null;
   const validate = () => {
   const nameRegex = /^[a-zA-Z\s]+$/;
   const phoneRegex = /^0[0-9]{9}$/;
@@ -49,7 +62,7 @@ function RegisterStudentTab() {
   const handleSubmit = async (e) => {
     e.preventDefault();
      if (!validate()) return; 
-    const p = calculatePackagePricing(formData.licenseType);
+     const p = calculatePackagePricing(formData.licenseType, formData.customerType, formData.paymentStatus);
     try {
        const res = await fetch(`${process.env.REACT_APP_API_URL}/api/customers`, {
         method: 'POST',
@@ -67,6 +80,7 @@ function RegisterStudentTab() {
           pricePerLesson:          p.pricePerLesson,
           emergency_contact_name:  formData.emergencyContact,
           emergency_contact_phone: formData.emergencyPhone,
+          paymentStatus:           formData.paymentStatus,
         }),
       });
       const data = await res.json();
@@ -165,6 +179,22 @@ function RegisterStudentTab() {
                   <h3><i className="fa-solid fa-id-card"></i> Package Selection</h3>
                 </div>
                 <div className="dash-card-body">
+                  <div className="form-row">
+                    <div className="reg-dash-group">
+                      <label>Customer Type *</label>
+                      <select name="customerType" value={formData.customerType} onChange={handleChange}>
+                        <option value="new">New Customer</option>
+                        <option value="special">Existing / Special Price</option>
+                      </select>
+                    </div>
+                    <div className="reg-dash-group">
+                      <label>Payment Status *</label>
+                      <select name="paymentStatus" value={formData.paymentStatus} onChange={handleChange}>
+                        <option value="owing">Still Owing</option>
+                        <option value="paid">Paid in Full</option>
+                      </select>
+                    </div>
+                  </div>
                   <div className="reg-dash-group">
                     <label>Package Type *</label>
                     <select name="licenseType" required value={formData.licenseType} onChange={handleChange} className={formData.licenseType ? 'has-value' : ''}>
