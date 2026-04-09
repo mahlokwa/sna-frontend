@@ -67,10 +67,11 @@ function Bookings() {
 
   const handleDateClick = (day) => {
     if (isPastDate(day)) return;
-    setSelectedDate(new Date(currentDate.getFullYear(), currentDate.getMonth(), day));
+    const clicked = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    if (clicked.getDay() === 0) return; // 0 = Sunday
+    setSelectedDate(clicked);
     setSelectedTime(null);
   };
-
   const handleSubmit = async () => {
     if (!selectedDate || !selectedTime) {
       setErrorMessage('Please select a date and time.');
@@ -84,7 +85,7 @@ function Bookings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerId:  customerData.customerId,
-          bookingDate: selectedDate.toISOString().split('T')[0],
+          bookingDate: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
           bookingTime: selectedTime,
         }),
       });
@@ -282,16 +283,17 @@ function Bookings() {
                     selectedDate &&
                     selectedDate.getDate() === day &&
                     selectedDate.getMonth() === currentDate.getMonth();
-                  let cls = 'calendar-day';
-                  if (past)          cls += ' past';
-                  else if (selected) cls += ' selected';
-                  else if (today)    cls += ' today';
+                  const isSunday = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).getDay() === 0;
+                    let cls = 'calendar-day';
+                    if (past || isSunday) cls += ' past';
+                    else if (selected)    cls += ' selected';
+                    else if (today)       cls += ' today';
                   return (
                     <button
                       key={day}
                       className={cls}
                       onClick={() => handleDateClick(day)}
-                      disabled={past}
+                      disabled={past|| isSunday}
                     >
                       {day}
                     </button>
