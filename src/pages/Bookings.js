@@ -10,12 +10,15 @@ function Bookings() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
-  const [selectedTruck, setSelectedTruck] = useState(null);       // NEW
-  const [availableTrucks, setAvailableTrucks] = useState([]);     // NEW
-  const [loadingTrucks, setLoadingTrucks] = useState(false);      // NEW
-  const [showSuccess, setShowSuccess] = useState(false);
+  const [selectedTruck, setSelectedTruck] = useState(null);
+  const [availableTrucks, setAvailableTrucks] = useState([]);
+  const [loadingTrucks, setLoadingTrucks] = useState(false);
+  const [slotAvailability, setSlotAvailability] = useState({});
+  const [hasBookedToday, setHasBookedToday] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [bookingDetails, setBookingDetails] = useState(null);
 
   const timeSlots = [
     '07:00 AM', '07:30 AM', '08:00 AM', '08:30 AM',
@@ -26,6 +29,17 @@ function Bookings() {
     '05:00 PM',
   ];
 
+  const convertTo24Hour = (time12h) => {
+    const [time, modifier] = time12h.split(' ');
+    let [hours, minutes] = time.split(':');
+    if (modifier === 'AM' && hours === '12') hours = '00';
+    if (modifier === 'PM' && hours !== '12') hours = String(parseInt(hours) + 12);
+    return `${hours.padStart(2, '0')}:${minutes}`;
+  };
+
+  const formatDateStr = (date) =>
+    `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+
   useEffect(() => {
     const bookingData = localStorage.getItem('customerBookingData');
     if (bookingData) {
@@ -35,7 +49,40 @@ function Bookings() {
     }
   }, [navigate]);
 
-  // NEW - Fetch available trucks whenever date or time changes
+  // Fetch slot availability + check if customer already booked on selected date
+  useEffect(() => {
+    if (!selectedDate || !customerData) {
+      setSlotAvailability({});
+      setHasBookedToday(false);
+      setSelectedTime(null);
+      setSelectedTruck(null);
+      setAvailableTrucks([]);
+      return;
+    }
+
+    const lessonDate = formatDateStr(selectedDate);
+
+    const fetchDayAvailability = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/bookings/day-availability?lessonDate=${lessonDate}&customerId=${customerData.customerId}`
+        );
+        const data = await res.json();
+        setSlotAvailability(data.slotAvailability || {});
+        setHasBookedToday(data.customerHasBooking || false);
+      } catch {
+        setSlotAvailability({});
+        setHasBookedToday(false);
+      }
+    };
+
+    fetchDayAvailability();
+    setSelectedTime(null);
+    setSelectedTruck(null);
+    setAvailableTrucks([]);
+  }, [selectedDate, customerData]);
+
+  // Fetch available trucks when time is selected
   useEffect(() => {
     if (!selectedDate || !selectedTime) {
       setAvailableTrucks([]);
@@ -46,19 +93,8 @@ function Bookings() {
     const fetchAvailableTrucks = async () => {
       setLoadingTrucks(true);
       setSelectedTruck(null);
-
-      // Convert time to 24hr for the API
-      const convertTo24Hour = (time12h) => {
-        const [time, modifier] = time12h.split(' ');
-        let [hours, minutes] = time.split(':');
-        if (modifier === 'AM' && hours === '12') hours = '00';
-        if (modifier === 'PM' && hours !== '12') hours = String(parseInt(hours) + 12);
-        return `${hours.padStart(2, '0')}:${minutes}`;
-      };
-
       const startTime = convertTo24Hour(selectedTime);
-      const lessonDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
-
+      const lessonDate = formatDateStr(selectedDate);
       try {
         const res = await fetch(
           `${process.env.REACT_APP_API_URL}/api/bookings/available-trucks?lessonDate=${lessonDate}&startTime=${startTime}`
@@ -108,19 +144,23 @@ function Bookings() {
     return new Date(currentDate.getFullYear(), currentDate.getMonth(), day) < today;
   };
 
+  const isSlotFull = (time) => {
+    const time24 = convertTo24Hour(time);
+    if (slotAvailability.hasOwnProperty(time24)) return !slotAvailability[time24];
+    return false;
+  };
+
   const handleDateClick = (day) => {
     if (isPastDate(day)) return;
     const clicked = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
     if (clicked.getDay() === 0) return;
     setSelectedDate(clicked);
-    setSelectedTime(null);
-    setSelectedTruck(null);   // NEW - reset truck on date change
-    setAvailableTrucks([]);   // NEW
   };
 
   const handleTimeClick = (time) => {
+    if (isSlotFull(time) || hasBookedToday) return;
     setSelectedTime(time);
-    setSelectedTruck(null);   // NEW - reset truck on time change
+    setSelectedTruck(null);
   };
 
   const handleSubmit = async () => {
@@ -136,15 +176,20 @@ function Bookings() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           customerId:  customerData.customerId,
-          bookingDate: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
+          bookingDate: formatDateStr(selectedDate),
           bookingTime: selectedTime,
-          truckId: selectedTruck.truckId,   // NEW
+          truckId:     selectedTruck.truckId,
         }),
       });
       const data = await res.json();
       if (res.ok) {
-        setShowSuccess(true);
-        setTimeout(() => setShowSuccess(false), 5000);
+        setBookingDetails({
+          date:  formatDate(selectedDate),
+          time:  selectedTime,
+          truck: selectedTruck.number_plate,
+        });
+        setShowPopup(true);
+
         const updated = {
           ...customerData,
           lessonsRemaining: customerData.lessonsRemaining - 1,
@@ -154,8 +199,10 @@ function Bookings() {
         localStorage.setItem('customerBookingData', JSON.stringify(updated));
         setSelectedDate(null);
         setSelectedTime(null);
-        setSelectedTruck(null);     // NEW
-        setAvailableTrucks([]);     // NEW
+        setSelectedTruck(null);
+        setAvailableTrucks([]);
+        setSlotAvailability({});
+        setHasBookedToday(false);
       } else {
         setErrorMessage(data.message || 'Error creating booking');
         setShowError(true);
@@ -182,8 +229,7 @@ function Bookings() {
     );
   }
 
-  // NEW - slot is full if all trucks are unavailable
-  const isSlotFull = availableTrucks.length > 0 && availableTrucks.every(t => !t.isAvailable);
+  const allTrucksFull = availableTrucks.length > 0 && availableTrucks.every(t => !t.isAvailable);
   const isFormValid = selectedDate && selectedTime && selectedTruck;
   const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
   const progressPct = customerData.totalLessons
@@ -192,6 +238,36 @@ function Bookings() {
 
   return (
     <div>
+
+      {/* ── SUCCESS POPUP ── */}
+      {showPopup && bookingDetails && (
+        <div className="popup-overlay" onClick={() => setShowPopup(false)}>
+          <div className="popup-card" onClick={e => e.stopPropagation()}>
+            <div className="popup-icon">
+              <i className="fa-solid fa-circle-check"></i>
+            </div>
+            <h2 className="popup-title">Booking Confirmed!</h2>
+            <p className="popup-subtitle">Your lesson has been successfully booked.</p>
+            <div className="popup-details">
+              <div className="popup-detail-row">
+                <i className="fa-solid fa-calendar-days"></i>
+                <span>{bookingDetails.date}</span>
+              </div>
+              <div className="popup-detail-row">
+                <i className="fa-solid fa-clock"></i>
+                <span>{bookingDetails.time}</span>
+              </div>
+              <div className="popup-detail-row">
+                <i className="fa-solid fa-truck"></i>
+                <span>{bookingDetails.truck}</span>
+              </div>
+            </div>
+            <button className="popup-btn" onClick={() => setShowPopup(false)}>
+              Done
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* ── HEADER ── */}
       <header className="header">
@@ -224,7 +300,6 @@ function Bookings() {
             </div>
           </div>
 
-          {/* Stats */}
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-icon red">
@@ -283,12 +358,6 @@ function Bookings() {
       {/* ── BOOKING SECTION ── */}
       <div className="booking-section">
 
-        {showSuccess && (
-          <div className="alert-success">
-            <i className="fa-solid fa-circle-check"></i>
-            Booking confirmed! We'll be in touch shortly.
-          </div>
-        )}
         {showError && (
           <div className="alert-error">
             <i className="fa-solid fa-triangle-exclamation"></i>
@@ -362,24 +431,40 @@ function Bookings() {
           <div className="right-panel">
             <div className="section-title">Select a Time Slot</div>
             <div className="card">
+
+              {hasBookedToday && (
+                <div className="day-booked-warning">
+                  <i className="fa-solid fa-circle-info"></i>
+                  You already have a booking on this day. Only one booking per day is allowed.
+                </div>
+              )}
+
               <div className="time-slots-grid">
                 {selectedDate ? (
-                  timeSlots.map(time => (
-                    <button
-                      key={time}
-                      className={`time-slot${selectedTime === time ? ' selected' : ''}`}
-                      onClick={() => handleTimeClick(time)}
-                    >
-                      {time}
-                    </button>
-                  ))
+                  timeSlots.map(time => {
+                    const full = isSlotFull(time);
+                    let cls = 'time-slot';
+                    if (full)                  cls += ' slot-full';
+                    if (selectedTime === time) cls += ' selected';
+                    return (
+                      <button
+                        key={time}
+                        className={cls}
+                        onClick={() => handleTimeClick(time)}
+                        disabled={full || hasBookedToday}
+                        title={full ? 'This slot is fully booked' : ''}
+                      >
+                        {time}
+                        {full && <span className="slot-full-label">Full</span>}
+                      </button>
+                    );
+                  })
                 ) : (
                   <div className="time-slots-placeholder">Select a date first</div>
                 )}
               </div>
 
-              {/* ── NEW: TRUCK SELECTION ── */}
-              {selectedTime && (
+              {selectedTime && !hasBookedToday && (
                 <div className="truck-selection">
                   <div className="truck-selection-title">
                     <i className="fa-solid fa-truck"></i> Select a Truck
@@ -387,7 +472,7 @@ function Bookings() {
 
                   {loadingTrucks ? (
                     <div className="truck-loading">Checking availability...</div>
-                  ) : isSlotFull ? (
+                  ) : allTrucksFull ? (
                     <div className="truck-slot-full">
                       <i className="fa-solid fa-ban"></i> This slot is fully booked. Please choose another time.
                     </div>
@@ -413,7 +498,6 @@ function Bookings() {
                 </div>
               )}
 
-              {/* Booking summary */}
               {isFormValid && (
                 <div className="booking-summary">
                   <div className="summary-title">
