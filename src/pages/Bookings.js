@@ -10,17 +10,20 @@ function Bookings() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedTime, setSelectedTime] = useState(null);
+  const [selectedTruck, setSelectedTruck] = useState(null);       // NEW
+  const [availableTrucks, setAvailableTrucks] = useState([]);     // NEW
+  const [loadingTrucks, setLoadingTrucks] = useState(false);      // NEW
   const [showSuccess, setShowSuccess] = useState(false);
   const [showError, setShowError] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
   const timeSlots = [
-  '07:00 AM', '07:30 AM', '08:00 AM', '08:30 AM',
-  '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
-  '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM',
-  '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM',
-  '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM',
-  '05:00 PM',
+    '07:00 AM', '07:30 AM', '08:00 AM', '08:30 AM',
+    '09:00 AM', '09:30 AM', '10:00 AM', '10:30 AM',
+    '11:00 AM', '11:30 AM', '12:00 PM', '12:30 PM',
+    '01:00 PM', '01:30 PM', '02:00 PM', '02:30 PM',
+    '03:00 PM', '03:30 PM', '04:00 PM', '04:30 PM',
+    '05:00 PM',
   ];
 
   useEffect(() => {
@@ -31,6 +34,46 @@ function Bookings() {
       navigate('/custlogin');
     }
   }, [navigate]);
+
+  // NEW - Fetch available trucks whenever date or time changes
+  useEffect(() => {
+    if (!selectedDate || !selectedTime) {
+      setAvailableTrucks([]);
+      setSelectedTruck(null);
+      return;
+    }
+
+    const fetchAvailableTrucks = async () => {
+      setLoadingTrucks(true);
+      setSelectedTruck(null);
+
+      // Convert time to 24hr for the API
+      const convertTo24Hour = (time12h) => {
+        const [time, modifier] = time12h.split(' ');
+        let [hours, minutes] = time.split(':');
+        if (modifier === 'AM' && hours === '12') hours = '00';
+        if (modifier === 'PM' && hours !== '12') hours = String(parseInt(hours) + 12);
+        return `${hours.padStart(2, '0')}:${minutes}`;
+      };
+
+      const startTime = convertTo24Hour(selectedTime);
+      const lessonDate = `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`;
+
+      try {
+        const res = await fetch(
+          `${process.env.REACT_APP_API_URL}/api/bookings/available-trucks?lessonDate=${lessonDate}&startTime=${startTime}`
+        );
+        const data = await res.json();
+        setAvailableTrucks(data);
+      } catch {
+        setAvailableTrucks([]);
+      } finally {
+        setLoadingTrucks(false);
+      }
+    };
+
+    fetchAvailableTrucks();
+  }, [selectedDate, selectedTime]);
 
   const getDaysInMonth = (date) => {
     const year  = date.getFullYear();
@@ -68,13 +111,21 @@ function Bookings() {
   const handleDateClick = (day) => {
     if (isPastDate(day)) return;
     const clicked = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    if (clicked.getDay() === 0) return; // 0 = Sunday
+    if (clicked.getDay() === 0) return;
     setSelectedDate(clicked);
     setSelectedTime(null);
+    setSelectedTruck(null);   // NEW - reset truck on date change
+    setAvailableTrucks([]);   // NEW
   };
+
+  const handleTimeClick = (time) => {
+    setSelectedTime(time);
+    setSelectedTruck(null);   // NEW - reset truck on time change
+  };
+
   const handleSubmit = async () => {
-    if (!selectedDate || !selectedTime) {
-      setErrorMessage('Please select a date and time.');
+    if (!selectedDate || !selectedTime || !selectedTruck) {
+      setErrorMessage('Please select a date, time, and truck.');
       setShowError(true);
       setTimeout(() => setShowError(false), 5000);
       return;
@@ -87,6 +138,7 @@ function Bookings() {
           customerId:  customerData.customerId,
           bookingDate: `${selectedDate.getFullYear()}-${String(selectedDate.getMonth() + 1).padStart(2, '0')}-${String(selectedDate.getDate()).padStart(2, '0')}`,
           bookingTime: selectedTime,
+          truckId: selectedTruck.truckId,   // NEW
         }),
       });
       const data = await res.json();
@@ -102,6 +154,8 @@ function Bookings() {
         localStorage.setItem('customerBookingData', JSON.stringify(updated));
         setSelectedDate(null);
         setSelectedTime(null);
+        setSelectedTruck(null);     // NEW
+        setAvailableTrucks([]);     // NEW
       } else {
         setErrorMessage(data.message || 'Error creating booking');
         setShowError(true);
@@ -128,7 +182,9 @@ function Bookings() {
     );
   }
 
-  const isFormValid = selectedDate && selectedTime;
+  // NEW - slot is full if all trucks are unavailable
+  const isSlotFull = availableTrucks.length > 0 && availableTrucks.every(t => !t.isAvailable);
+  const isFormValid = selectedDate && selectedTime && selectedTruck;
   const { daysInMonth, startingDayOfWeek } = getDaysInMonth(currentDate);
   const progressPct = customerData.totalLessons
     ? Math.round((customerData.lessonsUsed / customerData.totalLessons) * 100)
@@ -247,7 +303,6 @@ function Bookings() {
             <div className="section-title">Select a Date</div>
             <div className="card">
               <div className="calendar-nav">
-                {/* Plain text arrows — reliable cross-browser */}
                 <button
                   className="calendar-nav-btn"
                   onClick={() => setCurrentDate(new Date(currentDate.getFullYear(), currentDate.getMonth() - 1))}
@@ -284,16 +339,16 @@ function Bookings() {
                     selectedDate.getDate() === day &&
                     selectedDate.getMonth() === currentDate.getMonth();
                   const isSunday = new Date(currentDate.getFullYear(), currentDate.getMonth(), day).getDay() === 0;
-                    let cls = 'calendar-day';
-                    if (past || isSunday) cls += ' past';
-                    else if (selected)    cls += ' selected';
-                    else if (today)       cls += ' today';
+                  let cls = 'calendar-day';
+                  if (past || isSunday) cls += ' past';
+                  else if (selected)    cls += ' selected';
+                  else if (today)       cls += ' today';
                   return (
                     <button
                       key={day}
                       className={cls}
                       onClick={() => handleDateClick(day)}
-                      disabled={past|| isSunday}
+                      disabled={past || isSunday}
                     >
                       {day}
                     </button>
@@ -303,7 +358,7 @@ function Bookings() {
             </div>
           </div>
 
-          {/* ── RIGHT: TIME SLOTS + BOOK BUTTON ── */}
+          {/* ── RIGHT: TIME SLOTS + TRUCK SELECTION + BOOK BUTTON ── */}
           <div className="right-panel">
             <div className="section-title">Select a Time Slot</div>
             <div className="card">
@@ -313,7 +368,7 @@ function Bookings() {
                     <button
                       key={time}
                       className={`time-slot${selectedTime === time ? ' selected' : ''}`}
-                      onClick={() => setSelectedTime(time)}
+                      onClick={() => handleTimeClick(time)}
                     >
                       {time}
                     </button>
@@ -323,6 +378,41 @@ function Bookings() {
                 )}
               </div>
 
+              {/* ── NEW: TRUCK SELECTION ── */}
+              {selectedTime && (
+                <div className="truck-selection">
+                  <div className="truck-selection-title">
+                    <i className="fa-solid fa-truck"></i> Select a Truck
+                  </div>
+
+                  {loadingTrucks ? (
+                    <div className="truck-loading">Checking availability...</div>
+                  ) : isSlotFull ? (
+                    <div className="truck-slot-full">
+                      <i className="fa-solid fa-ban"></i> This slot is fully booked. Please choose another time.
+                    </div>
+                  ) : (
+                    <div className="truck-options">
+                      {availableTrucks.map(truck => (
+                        <button
+                          key={truck.truckId}
+                          className={`truck-btn${!truck.isAvailable ? ' truck-unavailable' : ''}${selectedTruck?.truckId === truck.truckId ? ' truck-selected' : ''}`}
+                          onClick={() => truck.isAvailable && setSelectedTruck(truck)}
+                          disabled={!truck.isAvailable}
+                        >
+                          <i className="fa-solid fa-truck"></i>
+                          <span>{truck.number_plate}</span>
+                          {!truck.isAvailable && <span className="truck-tag">Booked</span>}
+                          {truck.isAvailable && selectedTruck?.truckId === truck.truckId && (
+                            <span className="truck-tag selected-tag">Selected</span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Booking summary */}
               {isFormValid && (
                 <div className="booking-summary">
@@ -331,6 +421,7 @@ function Bookings() {
                   </div>
                   <div className="summary-item"><strong>Date:</strong> {formatDate(selectedDate)}</div>
                   <div className="summary-item"><strong>Time:</strong> {selectedTime}</div>
+                  <div className="summary-item"><strong>Truck:</strong> {selectedTruck.number_plate}</div>
                 </div>
               )}
 
