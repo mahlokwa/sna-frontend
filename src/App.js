@@ -17,6 +17,7 @@ import RegisterStudentTab from "./pages/RegisterStudentTab";
 import RegisterEmployeeTab from "./pages/RegisterEmployeeTab";
 import Contact from "./pages/Contact";
 import About from "./pages/About";
+import BookingUnavailable from "./pages/BookingUnavailable";
 
 function App() {
   return (
@@ -33,7 +34,7 @@ function App() {
         <Route path= "/Eregister" element={<RegisterEmployeeTab/>}/>
         <Route path= "/login" element={<EmployeeLogin/>}/>
         <Route path="/payment-record" element={<PaymentRecord />} />
-        <Route path= "/custlogin" element={<TokenEntry/>}/>
+        <Route path= "/custlogin" element={<BookingUnavailable/>}/>
         <Route path= "/manage-bookings" element={<ManageBookings/>}/>
         <Route path="/dashboard" element={<InstructorDashboard />} />
         <Route path="/Empdashboard" element={<EmployerDashboard/>} />
