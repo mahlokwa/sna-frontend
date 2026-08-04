@@ -35,6 +35,7 @@ function App() {
         <Route path= "/login" element={<EmployeeLogin/>}/>
         <Route path="/payment-record" element={<PaymentRecord />} />
         <Route path= "/custlogin" element={<BookingUnavailable/>}/>
+         <Route path= "/cust" element={<TokenEntry/>}/>
         <Route path= "/manage-bookings" element={<ManageBookings/>}/>
         <Route path="/dashboard" element={<InstructorDashboard />} />
         <Route path="/Empdashboard" element={<EmployerDashboard/>} />

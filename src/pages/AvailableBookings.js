@@ -13,10 +13,10 @@ function AvailableBookings({ staffInfo }) {
     return () => { if (interval) clearInterval(interval); };
   }, [autoRefresh]);
 
-  const loadAvailableBookings = async () => {
+ const loadAvailableBookings = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/available`);
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/bookings/available?instructorId=${staffInfo.staffId}`);
       const data = await res.json();
       if (res.ok) setBookings(data);
     } catch (e) { console.error(e); }
