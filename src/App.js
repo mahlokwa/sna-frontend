@@ -34,8 +34,8 @@ function App() {
         <Route path= "/Eregister" element={<RegisterEmployeeTab/>}/>
         <Route path= "/login" element={<EmployeeLogin/>}/>
         <Route path="/payment-record" element={<PaymentRecord />} />
-        <Route path= "/custlogin" element={<BookingUnavailable/>}/>
-         <Route path= "/cust" element={<TokenEntry/>}/>
+        <Route path= "/custlogin" element={<Tokenentry/>}/>
+         <Route path= "/cust" element={<BookingUnavailable/>}/>
         <Route path= "/manage-bookings" element={<ManageBookings/>}/>
         <Route path="/dashboard" element={<InstructorDashboard />} />
         <Route path="/Empdashboard" element={<EmployerDashboard/>} />
